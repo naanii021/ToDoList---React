@@ -1,0 +1,180 @@
+------ react router -------
+-nos permite navegar entre paginas sin recargar, sincroniza UI con la URL del navegador.
+-pasa datos entre rutas y usa el historial del navegador.
+-crea apps de paginas unicas (SPA).
+
+-> browserRouter envuelve toda la app
+-> routes contiene la rutas
+-> route define cada pagina
+-> useNavigate() para navegar
+-> useLocation() para recibir datos.
+
+
+
+
+
+------ useNavigate -------
+navigate con state permite enviar datos de una pagina a otra durante la navegacion. sin usar la URL ni variables globales. 
+
+- // 🚀 AQUÍ SE ENVÍAN LOS DATOS
+    navigate('/tasks', {              <------ lambia la ruta a /tasks
+      state: { newTask: taskData }    <---- envia un objeto con los datos
+    });
+  };
+
+-// 📥 AQUÍ SE RECIBEN LOS DATOS
+  useEffect(() => {                <--- se ejecuta cuando detecta nuevos datos 
+    if (location.state?.newTask) {     <--- accede a los datos enviados.
+      const newTask = {
+        ...location.state.newTask,     <--- Accede a los datos enviados
+        id: Date.now(),
+        completed: false
+      };
+
+
+
+
+------- useState -----
+- crea una variable de estado que React 'observa', cuando cambia, re-renderiza el componente.
+- tasks -> valor actual
+- setTasks -> funcion para actualizar el valor
+
+// ❌ Mal - mutación directa
+tasks.push(newTask);
+
+// ✅ Bien - crear nuevo array
+setTasks([...tasks, newTask]);
+setTasks(prevTasks => [...prevTasks, newTask]); // Mejor con callback
+
+
+
+
+----- useEffect ------
+cargar datos, escuchar camnbios, timers...
+
+- cargar datos al montar:
+useEffect(() => {
+  const storedTasks = localStorage.getItem('tasks');
+  if (storedTasks) {
+    setTasks(JSON.parse(storedTasks));
+  }
+}, []); // [] = solo se ejecuta una vez al montar
+
+-escuchar cambios especificos: 
+useEffect(() => {
+  if (location.state?.newTask) {
+    // Procesar nueva tarea
+  }
+}, [location.state?.newTask]); // Se ejecuta cuando cambia newTask
+
+- temporizador con cleanUp: 
+useEffect(() => {
+  const timer = setTimeout(() => {
+    navigate('/tasks');
+  }, 8000);
+  
+  return () => clearTimeout(timer); // Limpia si el componente se desmonta
+}, [navigate]);
+
+
+
+
+
+------ localStorage -------
+persistir tareas en el navegador
+almacenamiento local del navegador, los datos persisten inlcuso al cerrar el navegador. 
+almacena solo Strings (hay que convertir objetos)
+
+
+
+
+----- controlled components (formularios) ------
+formularios controlados por React
+componentes donde react controla el valor del input
+-react siempre sabe el valor actual 
+- facil validad en tiempo real 
+- facil resetear el formulario 
+
+return (
+    <form>
+      <input
+        name="title"
+        value={taskData.title}      // ← Controlado por React
+        onChange={handleChange}     // ← Actualiza el estado
+      />
+      <textarea
+        name="description"
+        value={taskData.description}
+        onChange={handleChange}
+      />
+      <select
+        name="priority"
+        value={taskData.priority}
+        onChange={handleChange}
+      >
+        <option value="baja">Baja</option>
+        <option value="media">Media</option>
+        <option value="alta">Alta</option>
+      </select>
+    </form>
+
+
+
+-----  validacion y manejo de errores -----
+
+ // Validaciones: 
+  if (!taskData.title.trim()) {
+    alert('El título es obligatorio');
+    return; // Detener ejecución
+  }
+  
+  if (taskData.title.length > 100) {
+    alert('El título es muy largo');
+    return;
+  }
+
+// confirmacion antes de acciones destructivas :
+  const deleteTask = (id) => {
+  if (window.confirm('¿Estás seguro de eliminar esta tarea?')) {
+    const updatedTasks = tasks.filter(task => task.id !== id);
+    setTasks(updatedTasks);
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+  }
+};
+
+
+
+
+
+
+----- PORPS comunicacion entre componentes ------
+son datos que se pasan de padre a hijo (unidireccional)
+
+return (
+    <div>
+      {tasks.map(task => (
+        <TaskCard 
+          key={task.id}
+          task={task}              // ← Pasando props
+          onDelete={handleDelete}  // ← Pasando función
+          showPriority={true}      // ← Pasando boolean
+        />
+      ))}
+    </div>
+
+- destruccion de props: 
+// ❌ Sin destructuring
+function TaskCard(props) {
+  return <h3>{props.task.title}</h3>;
+}
+
+// ✅ Con destructuring (más limpio)
+function TaskCard({ task, onDelete, showPriority }) {
+  return <h3>{task.title}</h3>;
+}
+
+// ✅ Con valores por defecto
+function TaskCard({ task, onDelete, showPriority = true }) {
+  return <h3>{task.title}</h3>;
+}
+

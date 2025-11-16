@@ -1,0 +1,61 @@
+.welcome-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url(../assets/rx7.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;  
+    position: relative;
+  }
+  
+  .welcome-content {
+    text-align: center;
+    color: white;
+    animation: fadeIn 1s ease-in;
+  }
+  
+  .welcome-content h1 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .welcome-content p {
+    font-size: 1.2rem;
+    margin-top: 2rem;
+    opacity: 0.9;
+  }
+  
+  .loader {
+    margin: 2rem auto;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .welcome-content h1 {
+      font-size: 2rem;
+    }
+  }
